@@ -354,10 +354,10 @@ docker compose exec fastapi-app python -m pytest tests/test_seed.py -v
 
 ## Verification Verdict
 
-- [ x ] All test cases have a Result entry
-- [ x ] All CD Challenge outputs are pasted verbatim
-- [ x ] All deviations are recorded in SESSION_LOG.md
-- [ x ] No invariant was violated — or if violated, recorded and escalated
+- [x] All test cases have a Result entry
+- [x] All CD Challenge outputs are pasted verbatim
+- [x] All deviations are recorded in SESSION_LOG.md
+- [x] No invariant was violated — or if violated, recorded and escalated
 
 **Status:** Completed
 
