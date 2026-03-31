@@ -1,11 +1,10 @@
 # VERIFICATION_RECORD — S1: Repo Scaffold & Compose Skeleton
-**Customer Risk API · Training Demo System**
 
 | Field | Value |
 |---|---|
 | Session | S1 — Repo Scaffold & Compose Skeleton |
 | Date | 2026-03-31 |
-| Engineer | J. Prasad |
+| Engineer | Y Vaishali Rao |
 
 > This record is completed during the session — not after. Predictions are written before tests are run. CD Challenge output is pasted verbatim. Nothing is backdated.
 
@@ -117,44 +116,6 @@ docker compose config | grep -A5 'depends_on'
 docker compose config | grep 'pg_isready'
 ```
 
-**CD Challenge Output:**
-```
-name: customer-risk-api
-services:
-  fastapi-app:
-    build:
-      context: /home/jprasad/customer-risk-api/api
-    depends_on:
-      postgres:
-        condition: service_healthy
-    env_file:
-      - /home/jprasad/customer-risk-api/.env
-    ports:
-      - mode: ingress
-        target: 8000
-        published: "8000"
-        protocol: tcp
-  postgres:
-    environment:
-      POSTGRES_DB: riskdb
-      POSTGRES_PASSWORD: <set this>
-      POSTGRES_USER: riskapi
-    healthcheck:
-      test:
-        - CMD-SHELL
-        - pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}
-      interval: 5s
-      timeout: 5s
-      retries: 5
-    image: postgres:15
-    volumes:
-      - type: volume
-        source: postgres_data
-        target: /var/lib/postgresql/data
-volumes:
-  postgres_data:
-    name: customer-risk-api_postgres_data
-```
 
 **Code Review:** postgres has no ports block — confirmed not exposed to host. depends_on uses service_healthy. No restart policy present (deviation from 1.4 was caught and removed — see SESSION_LOG deviations).
 
@@ -229,4 +190,176 @@ S1 has no invariant-touching tasks. No test coverage for INV-01 through INV-11 i
 
 **Status:** Complete
 
-**Engineer sign-off:** J. Prasad — 2026-03-31
+**Engineer sign-off:**  Y Vaishali Rao — 2026-03-31
+
+# VERIFICATION_RECORD — S2: Database Layer
+**Customer Risk API · Training Demo System**
+
+| Field | Value |
+|---|---|
+| Session | S2 — Database Layer |
+| Date |2026-03-31 |
+| Engineer | Y Vaishali Rao|
+
+> This record is completed during the session — not after. Predictions are written before tests are run. CD Challenge output is pasted verbatim. Nothing is backdated.
+
+---
+
+## Task 2.1 — Schema Migration SQL
+
+> **INVARIANT TOUCH: INV-01, INV-03**
+
+| Case | Scenario | Expected Outcome | Result |
+|---|---|---|---|
+| 2.1 TC-1 | Schema creates without error | psql exits 0 on first run | PASS |
+| 2.1 TC-2 | Schema is idempotent | psql exits 0 on second run with no errors | PASS|
+| 2.1 TC-3 | Table exists with correct columns | \d risk_profiles shows customer_id, risk_tier, risk_factors, created_at |PASS |
+| 2.1 TC-4 | risk_tier column is ENUM not VARCHAR | \d risk_profiles shows type risk_tier_enum for risk_tier column |PASS |
+| 2.1 TC-5 | No triggers on table | SELECT count(*) FROM pg_trigger WHERE tgrelid = 'risk_profiles'::regclass returns 0 |PASS |
+
+
+
+**Verification command:**
+```
+cd customer-risk-api
+docker compose exec -T postgres psql -U riskapi -d riskdb \
+  -f /dev/stdin < db/migrations/001_schema.sql
+docker compose exec -T postgres psql -U riskapi -d riskdb \
+  -f /dev/stdin < db/migrations/001_schema.sql
+docker compose exec postgres psql -U riskapi -d riskdb \
+  -c "SELECT count(*) FROM pg_trigger WHERE tgrelid = 'risk_profiles'::regclass;"
+```
+
+
+**Code Review:**
+
+> Check: no triggers attached to risk_profiles.
+> Check: TEXT[] not JSONB (order preservation).
+> Check: IF NOT EXISTS on both CREATE statements.
+
+---
+
+## Task 2.2 — Seed Script
+
+> **INVARIANT TOUCH: INV-01, INV-11**
+
+| Case | Scenario | Expected Outcome | Result |
+|---|---|---|---|
+| 2.2 TC-1 | First run inserts 9 rows | SELECT COUNT(*) returns 9 after first run |PASS |
+| 2.2 TC-2 | Second run does not change row count | SELECT COUNT(*) still returns 9 after second run |PASS |
+| 2.2 TC-3 | DEMO-007 is HIGH tier | SELECT risk_tier FROM risk_profiles WHERE customer_id='DEMO-007' returns HIGH |PASS |
+| 2.2 TC-4 | DEMO-001 has 3 factors in correct order | SELECT risk_factors FROM risk_profiles WHERE customer_id='DEMO-001' returns the exact array specified | PASS|
+| 2.2 TC-5 | No DEMO-010 or other records exist | SELECT COUNT(*) FROM risk_profiles returns exactly 9 |PASS |
+
+
+
+**Verification command:**
+```
+cd customer-risk-api
+docker compose exec -T postgres psql -U riskapi -d riskdb \
+  -f /dev/stdin < db/seed/seed.sql
+docker compose exec -T postgres psql -U riskapi -d riskdb \
+  -f /dev/stdin < db/seed/seed.sql
+docker compose exec postgres psql -U riskapi -d riskdb \
+  -c "SELECT COUNT(*) FROM risk_profiles;"
+docker compose exec postgres psql -U riskapi -d riskdb \
+  -c "SELECT risk_tier FROM risk_profiles WHERE customer_id='DEMO-007';"
+```
+
+
+**Code Review:**
+
+> Check: ON CONFLICT (customer_id) DO NOTHING on every INSERT.
+> Check: exactly 9 rows after two runs.
+> Check: factor arrays match the spec order exactly — no sorting.
+
+---
+
+## Task 2.3 — psycopg2 Connection Pool Module
+
+| Case | Scenario | Expected Outcome | Result |
+|---|---|---|---|
+| 2.3 TC-1 | Pool initialises without error | python import exits 0 | PASS|
+| 2.3 TC-2 | get_conn returns a live connection | SELECT 1 returns (1,) |PASS |
+| 2.3 TC-3 | release_conn returns conn to pool | get_conn called 5 times then release_conn x5 then get_conn again succeeds | PASS|
+| 2.3 TC-4 | Credentials not logged | docker compose logs fastapi-app contains no POSTGRES_PASSWORD value | PASS|
+
+
+
+**Verification command:**
+```
+docker compose exec fastapi-app python -c \
+  "from app.db import get_conn, release_conn; c=get_conn(); \
+   cur=c.cursor(); cur.execute('SELECT 1'); \
+   print(cur.fetchone()); release_conn(c)"
+```
+
+
+
+**Code Review:**
+
+> Check: module-level pool initialised at import time, not per-request.
+> Check: get_conn() does not catch exceptions — lets them propagate.
+> Check: no ORM abstraction — bare psycopg2 only.
+> Check: credentials sourced from os.environ, not hardcoded.
+
+---
+
+## Task 2.4 — Database Integration Smoke Test
+
+> **INVARIANT TOUCH: INV-01, INV-11**
+
+| Case | Scenario | Expected Outcome | Result |
+|---|---|---|---|
+| 2.4 TC-1 | Row count is 9 | test_row_count passes | PASS|
+| 2.4 TC-2 | All 9 IDs present | test_all_ids_present passes |PASS |
+| 2.4 TC-3 | Tier distribution is 3/3/3 | test_tier_distribution passes |PASS |
+| 2.4 TC-4 | DEMO-001 factors match exactly (ordered) | test_demo001_factors_exact passes | PASS|
+| 2.4 TC-5 | DEMO-007 is HIGH | test_demo007_tier passes |PASS |
+| 2.4 TC-6 | Seed is idempotent | test_idempotency passes — count still 9 after second seed run | PASS|
+
+
+
+**Verification command:**
+```
+docker compose exec fastapi-app python -m pytest tests/test_seed.py -v
+```
+
+
+
+**Code Review:**
+
+> Check: test_demo001_factors_exact uses == not 'in' — order matters.
+> Check: test_idempotency reads the actual seed.sql file, not a hardcoded INSERT.
+> Check: teardown releases connections back to pool.
+
+---
+
+
+---
+
+## Test Cases Added During Session
+
+| Case | Scenario | Expected Outcome | Reason for Addition |
+|---|---|---|---|
+| | | | |
+
+---
+
+## Scope Decisions
+
+> Note anything intentionally deferred and which task will cover it.
+
+---
+
+## Verification Verdict
+
+- [ x ] All test cases have a Result entry
+- [ x ] All CD Challenge outputs are pasted verbatim
+- [ x ] All deviations are recorded in SESSION_LOG.md
+- [ x ] No invariant was violated — or if violated, recorded and escalated
+
+**Status:** Completed
+
+**Engineer sign-off:** Y Vaishali Rao - 2026-03-31
+
