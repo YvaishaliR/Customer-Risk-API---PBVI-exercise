@@ -152,8 +152,8 @@ Expected: fastapi-app and postgres both show status 'running' (or 'healthy' for 
 | 3.1 | Auth Dependency| COMPLETED | `abca986` |
 | 3.2 | Customer Endpoint| COMPLETED | `abca986` |
 | 3.3 | Global error handlers | COMPLETED | `c1a75b2` |
-| 3.4 | API test suite- customers and auth| IN PROGRESS | `` |
-| 3.4 | Mutability test suite| IN PROGRESS | `` |
+| 3.4 | API test suite- customers and auth| COMPLETED | `4d4472f` |
+| 3.5 | Mutability test suite| IN PROGRESS | `` |
 
 
 ---
