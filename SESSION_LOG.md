@@ -149,11 +149,11 @@ Expected: fastapi-app and postgres both show status 'running' (or 'healthy' for 
 
 | Task ID | Task Name | Status | Commit |
 |---|---|---|---|
-| 3.1 | Auth Dependency| IN PROGRESS | `` |
-| 3.2 | Customer Endpoint| IN PROGRESS | `` |
-| 3.3 | Global error handlers | IN PROGRESS | `` |
-| 3.4 | API test suite- customers and auth| IN PROGRESS | `` |
-| 3.4 | Mutability test suite| IN PROGRESS | `` |
+| 3.1 | Auth Dependency| COMPLETED | `abca986` |
+| 3.2 | Customer Endpoint| COMPLETED | `abca986` |
+| 3.3 | Global error handlers | COMPLETED | `c1a75b2` |
+| 3.4 | API test suite- customers and auth| COMPLETED | `4d4472f` |
+| 3.5 | Mutability test suite| COMPLETED | `e146e38` |
 
 
 ---
@@ -191,9 +191,9 @@ Expected: fastapi-app and postgres both show status 'running' (or 'healthy' for 
 
 - [x] Integration check PASSED
 - [x] All tasks verified
-- [x] PR raised — PR#: session/s1_scaffold -> main
+- [x] PR raised — PR#: session/s3 -> main
 
-**Status:** Complete
+**Status:** Completed
 
 **Engineer sign-off:** Y Vaishali Rao — 2026-03-31
 

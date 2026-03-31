@@ -25,6 +25,7 @@ services:
     volumes:
       - ./tests:/app/tests
       - ./db:/app/db
+      - /var/run/docker.sock:/var/run/docker.sock
 
 volumes:
   postgres_data:
