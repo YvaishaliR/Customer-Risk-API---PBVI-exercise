@@ -262,8 +262,65 @@ Expected: fastapi-app and postgres both show status 'running' (or 'healthy' for 
 **Engineer sign-off:** Y Vaishali Rao — 2026-03-31
 
 
+# SESSION_LOG — S5: UI Layer
+
+| Field | Value |
+|---|---|
+| Session | S5- UI Layer |
+| Date | 2026-04-01 |
+| Engineer | Y Vaishali Rao |
+| Branch | session/s5 |
+| Claude.md version | v1.0 |
+| Status | Completed |
+
+---
+
+## Tasks
+
+| Task ID | Task Name | Status | Commit |
+|---|---|---|---|
+| 5.1 | Server side ui lookup route| COMPLETED | `5313950` |
+| 5.2 | Static html ui| COMPLETED | `c8e0726` |
+| 5.3 | UI fidelity test suite | COMPLETED | `0bc003d` |
+| 5.4 | Dockerfile static files wiring| COMPLETED | `0fe7984` |
 
 
+---
+
+## Decision Log
+
+| Task | Decision Made | Rationale |
+|---|---|---|
+|  | |  |
+
+---
+
+## Deviations
+
+> Any deviation from the execution plan or claude.md must be recorded here. If a task prompt conflicted with an invariant, record which invariant governed. Do not resolve conflicts silently.
+
+| Task | Deviation Observed | Action Taken |
+|---|---|---|
+||  |  |
+
+---
+
+## Claude.md Changes
+
+> No change is permitted that weakens an invariant.
+
+| Change | Reason | New Version | Tasks Re-Verified |
+|---|---|---|---|
+| None | — | — | — |
+
+---
+
+## Session Completion
 
 
+- [x] Integration check PASSED
+- [x] All tasks verified
+- [x] PR raised — PR#: session/s5 -> main
+**Status:** Completed
 
+**Engineer sign-off:** Y Vaishali Rao — 2026-04-01
