@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(python -c \":*)"
+      "Bash(python -c \":*)",
+      "Bash(python -m pytest tests/test_startup.py -v -s)",
+      "Bash(docker compose:*)"
     ]
   }
 }
