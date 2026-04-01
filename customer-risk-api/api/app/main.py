@@ -2,7 +2,8 @@ import logging
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 
 from app.routers import customers, ui
 
@@ -30,6 +31,4 @@ async def generic_exception_handler(request: Request, exc: Exception):
     return JSONResponse(status_code=500, content={"error": "Internal server error", "status": 500})
 
 
-@app.get("/")
-def root():
-    return FileResponse("/app/app/static/index.html")
+app.mount("/", StaticFiles(directory="app/static", html=True), name="static")
