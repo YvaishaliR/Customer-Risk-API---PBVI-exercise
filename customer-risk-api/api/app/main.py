@@ -2,7 +2,7 @@ import logging
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
 
 from app.routers import customers, ui
 
@@ -32,4 +32,4 @@ async def generic_exception_handler(request: Request, exc: Exception):
 
 @app.get("/")
 def root():
-    return {"status": "ok"}
+    return FileResponse("/app/app/static/index.html")
