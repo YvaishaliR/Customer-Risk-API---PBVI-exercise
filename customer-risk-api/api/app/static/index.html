@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customer Risk Lookup</title>
+  <style>
+    body {
+      font-family: monospace;
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 0 20px;
+      background: #f5f5f5;
+      color: #222;
+    }
+    .banner {
+      background: #ffcc00;
+      color: #222;
+      text-align: center;
+      font-weight: bold;
+      padding: 10px;
+      margin-bottom: 24px;
+      border: 2px solid #cc9900;
+    }
+    h1 { font-size: 1.2rem; margin-bottom: 16px; }
+    input[type="text"] {
+      padding: 8px;
+      font-size: 1rem;
+      font-family: monospace;
+      width: 220px;
+      border: 1px solid #aaa;
+    }
+    button {
+      padding: 8px 16px;
+      font-size: 1rem;
+      font-family: monospace;
+      cursor: pointer;
+      margin-left: 8px;
+    }
+    #result {
+      margin-top: 24px;
+      background: #fff;
+      border: 1px solid #ccc;
+      padding: 16px;
+      white-space: pre-line;
+      min-height: 48px;
+    }
+    .error { color: #cc0000; }
+  </style>
+</head>
+<body>
+  <div class="banner">DEMO SYSTEM — Synthetic data only</div>
+  <h1>Customer Risk Lookup</h1>
+  <div>
+    <input type="text" id="customer-id" placeholder="e.g. DEMO-001">
+    <button id="submit-btn">Look up</button>
+  </div>
+  <div id="result"></div>
+
+  <script>
+    document.getElementById('submit-btn').addEventListener('click', function () {
+      var input = document.getElementById('customer-id').value;
+      var result = document.getElementById('result');
+      result.className = '';
+      result.textContent = 'Loading...';
+
+      fetch('/ui/lookup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ customer_id: input })
+      })
+        .then(function (resp) { return resp.json(); })
+        .then(function (data) {
+          if (data.customer_id) {
+            var factors = Array.isArray(data.risk_factors)
+              ? data.risk_factors.join('\n')
+              : '';
+            result.className = '';
+            result.textContent =
+              'Customer: ' + data.customer_id + '\n' +
+              'Risk Tier: ' + data.risk_tier + '\n' +
+              'Factors:\n' + factors;
+          } else {
+            result.className = 'error';
+            result.textContent = data.error || 'Unknown error';
+          }
+        })
+        .catch(function () {
+          result.className = 'error';
+          result.textContent = 'Request failed. Please try again.';
+        });
+    });
+  </script>
+</body>
+</html>

@@ -3,14 +3,16 @@ import logging
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 
-from app.routers import customers
+from app.routers import customers, ui
 
 logger = logging.getLogger(__name__)
 
 app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 
 app.include_router(customers.router)
+app.include_router(ui.router)
 
 
 @app.exception_handler(RequestValidationError)
@@ -29,6 +31,4 @@ async def generic_exception_handler(request: Request, exc: Exception):
     return JSONResponse(status_code=500, content={"error": "Internal server error", "status": 500})
 
 
-@app.get("/")
-def root():
-    return {"status": "ok"}
+app.mount("/", StaticFiles(directory="app/static", html=True), name="static")
