@@ -343,10 +343,10 @@ Expected: fastapi-app and postgres both show status 'running' (or 'healthy' for 
 
 | Task ID | Task Name | Status | Commit |
 |---|---|---|---|
-| 6.1 |Compose healthcheck and startup sequencing| COMPLETED | `5313950` |
-| 6.2 |  Startup state test| COMPLETED | `c8e0726` |
-| 6.3 | Seed idempotency and double-compose test | COMPLETED | `0bc003d` |
-| 6.4 | Full integration run — cold start| COMPLETED | `0fe7984` |
+| 6.1 |Compose healthcheck and startup sequencing| COMPLETED | `75c1c1` |
+| 6.2 |  Startup state test| COMPLETED | `75c1c1` |
+| 6.3 | Seed idempotency and double-compose test | COMPLETED | `75c1c1` |
+| 6.4 | Full integration run — cold start| COMPLETED | `75c1c1` |
 
 
 ---
