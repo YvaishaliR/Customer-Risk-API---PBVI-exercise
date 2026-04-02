@@ -324,3 +324,67 @@ Expected: fastapi-app and postgres both show status 'running' (or 'healthy' for 
 **Status:** Completed
 
 **Engineer sign-off:** Y Vaishali Rao — 2026-04-01
+
+
+# SESSION_LOG — S6: Operational Hardening & Integration
+
+| Field | Value |
+|---|---|
+| Session | S6- Operational Hardening & Integration |
+| Date | 2026-04-01 |
+| Engineer | Y Vaishali Rao |
+| Branch | session/s6 |
+| Claude.md version | v1.0 |
+| Status | Completed |
+
+---
+
+## Tasks
+
+| Task ID | Task Name | Status | Commit |
+|---|---|---|---|
+| 6.1 |Compose healthcheck and startup sequencing| COMPLETED | `75c1c1` |
+| 6.2 |  Startup state test| COMPLETED | `75c1c1` |
+| 6.3 | Seed idempotency and double-compose test | COMPLETED | `75c1c1` |
+| 6.4 | Full integration run — cold start| COMPLETED | `75c1c1` |
+
+
+---
+
+## Decision Log
+
+| Task | Decision Made | Rationale |
+|---|---|---|
+|  | |  |
+
+---
+
+## Deviations
+
+> Any deviation from the execution plan or claude.md must be recorded here. If a task prompt conflicted with an invariant, record which invariant governed. Do not resolve conflicts silently.
+
+| Task | Deviation Observed | Action Taken |
+|---|---|---|
+||  |  |
+
+---
+
+## Claude.md Changes
+
+> No change is permitted that weakens an invariant.
+
+| Change | Reason | New Version | Tasks Re-Verified |
+|---|---|---|---|
+| None | — | — | — |
+
+---
+
+## Session Completion
+
+
+- [x] Integration check PASSED
+- [x] All tasks verified
+- [x] PR raised — PR#: session/s6 -> main
+**Status:** Completed
+
+**Engineer sign-off:** Y Vaishali Rao — 2026-04-01
